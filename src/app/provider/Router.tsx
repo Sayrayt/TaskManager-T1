@@ -1,9 +1,10 @@
 import { lazy, Suspense } from "react";
 import { createBrowserRouter, Route, createRoutesFromElements } from "react-router-dom";
-import Loading from "@/pages/loading/Loading"
+import Loading from "@/pages/loading/Loading";
+import ErrorPage from "@/pages/errorPage/ErrorPage";
 
 const Home = lazy(() => import("@/pages/home/Home"));
-const TaskItem = lazy(() => import("@/pages/tasks/TaskItem"));
+const TaskDetails = lazy(() => import("@/pages/tasks/TaskDetails"));
 
 const Router = createBrowserRouter(
     createRoutesFromElements(
@@ -14,16 +15,16 @@ const Router = createBrowserRouter(
                     <Home />
                 </Suspense>
             }
-            errorElement={<h1>Ошибка</h1>}
+            errorElement={<ErrorPage />}
         >
             <Route
                 path="task/:taskId"
                 element={
                     <Suspense fallback={<Loading />}>
-                        <TaskItem />
+                        <TaskDetails />
                     </Suspense>
                 }
-                errorElement={<h1>Ошибка</h1>}
+                errorElement={<ErrorPage />}
             />
         </Route>
     )

@@ -1,11 +1,8 @@
-import { HStack, Button, useDisclosure } from "@chakra-ui/react";
+import { HStack, Button } from "@chakra-ui/react";
 import { ColorModeButton } from "@/components/ui/color-mode";
 import Sidebar from "@/widgets/sidebar/Sidebar";
 
-export default function Header() {
-    const { open, onOpen, onClose } = useDisclosure({ defaultOpen: true });
-
-
+export default function Header({ open, onClose, onOpen }: any) {
     return (
         <header className="header">
             <HStack
@@ -13,7 +10,7 @@ export default function Header() {
                 justifyContent="space-between"
                 h="20"
             >
-                <Button onClick={onOpen}>Открыть Drawer</Button>
+                <Button onClick={onOpen}>Открыть менеджер задач</Button>
                 <ColorModeButton />
             </HStack>
 
