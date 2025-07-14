@@ -9,6 +9,7 @@ import {
   IconButton,
   HStack,
   Tabs,
+  useBreakpointValue
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { LuSearch, LuFileClock, LuFileCheck2, LuFilePen } from "react-icons/lu";
@@ -33,6 +34,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [chosenPriorities, setChosenPriorities] = useState<string[]>(["all"]);
   const [chosenCategories, setChosenCategories] = useState<string[]>(["all"]);
   const [filteredTasksList, setFilteredTasksList] = useState<Task[]>([]);
+
+  const isFitted = useBreakpointValue({ base: false, md: true });
 
   const handlePriorityChange = (value: string) => {
     setChosenPriorities((prev) => {
@@ -80,7 +83,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   }
 
   return (
-    <Drawer.Root size={"md"} placement="start" open={isOpen} onOpenChange={() => onClose()}>
+    <Drawer.Root size={{ base: "full", md: "md" }} placement="start" open={isOpen} onOpenChange={() => onClose()}>
       <Portal>
         <Drawer.Backdrop />
         <Drawer.Positioner >
@@ -88,7 +91,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             <Drawer.Header >
               <Drawer.Title>Менеджер задач</Drawer.Title>
             </Drawer.Header>
-            <Drawer.Body>
+            <Drawer.Body p={{ base: "10px", md: "20px" }}>
               <Box>
                 <Button marginBottom={2} width={"100%"} onClick={handleCreateTask}>
                   Создать задачу
@@ -96,7 +99,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <Heading mb={2}>Задачи</Heading>
                 <Box>
                   <Tabs.Root pt={5} pb={5}
-                    fitted
+                    fitted={isFitted}
                     variant={"enclosed"}
                     defaultValue="To Do"
                     value={activeTab}

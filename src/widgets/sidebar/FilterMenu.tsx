@@ -19,7 +19,7 @@ export default function FilterMenu({
     const categoryOptions = ["Bug", "Feature", "Documentation", "Refactor", "Test"];
 
     return (
-        <HStack gap={2}>
+        <HStack flexDirection={{ base: "column", md: "row" }} gap={2}>
             <Menu.Root closeOnSelect={false}>
                 <Menu.Trigger asChild>
                     <Button colorScheme="blue">
