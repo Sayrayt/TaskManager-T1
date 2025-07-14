@@ -7,6 +7,7 @@ import {
     Select,
     Portal,
     createListCollection,
+    Box
 } from "@chakra-ui/react";
 import useStore from "@/app/store/store";
 import { useState, useEffect } from "react";
@@ -58,10 +59,6 @@ export default function TaskDetails() {
         }
     }, [editableTask]);
 
-    console.log("editableTask", editableTask);
-    console.log("tasksList", tasksList);
-
-
     const handleCancel = () => {
         setEditableTask({} as Task);
         navigate("/", { state: { openSidebar: true } });
@@ -88,15 +85,6 @@ export default function TaskDetails() {
         navigate("/", { state: { openSidebar: true } });
     };
 
-    // if (!editableTask?.id) {
-    //     return (
-    //         <Center>
-    //             <Card.Root maxW="md">
-    //                 <Card.Body>Задача не выбрана</Card.Body>
-    //             </Card.Root>
-    //         </Center>
-    //     );
-    // }
 
     return (
         <Center>
@@ -113,7 +101,7 @@ export default function TaskDetails() {
                             <Editable.Input />
                         </Editable.Root>
                     </Card.Title>
-                    <Card.Description>
+                    <Card.Description as={Box}>
                         <Editable.Root
                             textAlign="start"
                             value={description}
