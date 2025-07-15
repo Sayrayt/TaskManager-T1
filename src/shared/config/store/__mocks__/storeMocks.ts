@@ -1,14 +1,19 @@
 import type { Task } from "@/entites/task/model/TaskIteminterface";
 import { v4 as uuidv4 } from "uuid";
+import { format } from "date-fns";
 
-export const tasksList: Task[] = [
+const now = new Date();
+const formatted = format(now, "dd.MM.yyyy");
+
+const defaultTasks: Task[] = [
   {
     id: uuidv4(),
     title: "Исправить падение приложения",
-    description: "Ошибка при открытии настроек.",
+    description: "Ошибка при открытии настроек",
     status: "To Do",
     priority: "High",
     category: "Bug",
+    date: formatted,
   },
   {
     id: uuidv4(),
@@ -17,6 +22,7 @@ export const tasksList: Task[] = [
     status: "In Progress",
     priority: "Medium",
     category: "Feature",
+    date: formatted,
   },
   {
     id: uuidv4(),
@@ -25,6 +31,7 @@ export const tasksList: Task[] = [
     status: "Done",
     priority: "Low",
     category: "Documentation",
+    date: formatted,
   },
   {
     id: uuidv4(),
@@ -33,6 +40,7 @@ export const tasksList: Task[] = [
     status: "To Do",
     priority: "Medium",
     category: "Refactor",
+    date: formatted,
   },
   {
     id: uuidv4(),
@@ -41,6 +49,7 @@ export const tasksList: Task[] = [
     status: "In Progress",
     priority: "High",
     category: "Test",
+    date: formatted,
   },
   {
     id: uuidv4(),
@@ -49,6 +58,7 @@ export const tasksList: Task[] = [
     status: "Done",
     priority: "Low",
     category: "Bug",
+    date: formatted,
   },
   {
     id: uuidv4(),
@@ -57,6 +67,7 @@ export const tasksList: Task[] = [
     status: "To Do",
     priority: "High",
     category: "Feature",
+    date: formatted,
   },
   {
     id: uuidv4(),
@@ -65,6 +76,7 @@ export const tasksList: Task[] = [
     status: "Done",
     priority: "Medium",
     category: "Documentation",
+    date: formatted,
   },
   {
     id: uuidv4(),
@@ -73,6 +85,7 @@ export const tasksList: Task[] = [
     status: "In Progress",
     priority: "Medium",
     category: "Refactor",
+    date: formatted,
   },
   {
     id: uuidv4(),
@@ -81,5 +94,23 @@ export const tasksList: Task[] = [
     status: "To Do",
     priority: "High",
     category: "Test",
+    date: formatted,
   },
 ];
+
+let tasksList: Task[] = [];
+
+try {
+  const saved = localStorage.getItem("tasksList");
+  if (saved) {
+    tasksList = JSON.parse(saved);
+  } else {
+    tasksList = defaultTasks;
+    localStorage.setItem("tasksList", JSON.stringify(defaultTasks));
+  }
+} catch {
+  tasksList = defaultTasks;
+  localStorage.setItem("tasksList", JSON.stringify(defaultTasks));
+}
+
+export { tasksList };

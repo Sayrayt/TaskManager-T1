@@ -6,6 +6,7 @@ import {
   Button,
   Status,
   IconButton,
+  Stat,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import useStore from "@/shared/config/store/store";
@@ -23,17 +24,18 @@ interface TaskItemProps {
 }
 
 export default function TaskItem({ task, onTaskClick }: TaskItemProps) {
-  const { setEditableTask, tasksList, setTasksList } = useStore();
+  const { setEditableTask, deleteTask } = useStore();
   const navigate = useNavigate();
 
   const handleEditClick = () => {
+    setEditableTask(task);
     navigate(`/task/${task.id}`);
     onTaskClick();
+    localStorage.setItem("editableTask", JSON.stringify(task));
   };
 
   const handleDeleteTask = () => {
-    const updatedTasksList = tasksList.filter((el) => el.id !== task.id);
-    setTasksList(updatedTasksList);
+    deleteTask(task);
     toaster.create({
       description: `Задача "${task.title}" успешно удалена`,
       type: "success",
@@ -41,7 +43,7 @@ export default function TaskItem({ task, onTaskClick }: TaskItemProps) {
   };
 
   return (
-    <Card.Root flexDirection="row" overflow="hidden" maxW="xl">
+    <Card.Root flexDirection="row" overflow="hidden">
       <Box flex={1}>
         <Card.Header>
           <HStack alignItems={"flex-end"} justifyContent={"space-between"}>
@@ -74,15 +76,12 @@ export default function TaskItem({ task, onTaskClick }: TaskItemProps) {
           </HStack>
         </Card.Body>
 
-        <Card.Footer>
-          <Button
-            onClick={() => {
-              setEditableTask(task);
-              handleEditClick();
-            }}
-          >
-            Редактировать
-          </Button>
+        <Card.Footer flexDirection={"row-reverse"}>
+          <Button onClick={handleEditClick}>Редактировать</Button>
+          <Stat.Root w={"full"}>
+            <Stat.Label>Дата создания</Stat.Label>
+            <Stat.ValueText fontSize={"md"}>{task.date}</Stat.ValueText>
+          </Stat.Root>
         </Card.Footer>
       </Box>
     </Card.Root>
