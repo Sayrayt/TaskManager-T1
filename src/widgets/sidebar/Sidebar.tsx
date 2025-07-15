@@ -28,6 +28,7 @@ import TaskFilterMenu from "@/widgets/sidebar/FilterMenu";
 import { searchSchema } from "@/widgets/sidebar/model/sidebarValidationShema";
 import type { Task } from "@/entites/task/model/TaskIteminterface";
 import { parse, compareAsc, compareDesc } from "date-fns";
+import tasksApiService from "@/shared/api/tasksApiService";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -51,6 +52,19 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
   const isFitted = useBreakpointValue({ base: false, md: true });
+
+  useEffect(() => {
+    const fetchTasksList = async () => {
+      try {
+        const tasksListFromServer = await tasksApiService.getTasksList();
+        console.log("tasksListFromServer", tasksListFromServer);
+      } catch (error) {
+        console.error("Ошибка", error);
+      }
+    };
+
+    fetchTasksList();
+  }, []);
 
   useEffect(() => {
     const stored = localStorage.getItem("tasksList");
