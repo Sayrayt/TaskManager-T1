@@ -6,9 +6,7 @@ import type { AxiosInstance } from "axios";
 */
 export const instance: AxiosInstance = axios.create({
   withCredentials: true,
-  baseURL:
-    import.meta.env.VITE_DEV_SERV ||
-    "https://6875711f814c0dfa653891a4.mockapi.io/api/v1/",
+  baseURL: "https://6875711f814c0dfa653891a4.mockapi.io/api/v1",
 });
 
 //Перехватчик запросов
