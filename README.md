@@ -1,4 +1,4 @@
-# Домашнее задание №1
+# Менеджер задач
 
 **Стек:** React • TypeScript • Vite (Node v20.19.3, Vite v7.0.4)  
 **UI‑библиотека:** Chakra UI  
