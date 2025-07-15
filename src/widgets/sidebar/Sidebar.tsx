@@ -6,17 +6,18 @@ import {
   Box,
   Heading,
   Input,
-  IconButton,
+  InputGroup,
   HStack,
   Tabs,
-  useBreakpointValue
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
+import useStore from "@/shared/config/store/store";
+import { useNavigate } from "react-router-dom";
 import { LuSearch, LuFileClock, LuFileCheck2, LuFilePen } from "react-icons/lu";
-import TasksList from "@/pages/tasks/TasksList"
-import type { Task } from "@/pages/tasks/TaskItem";
-import useStore from "@/app/store/store";
+import TasksList from "@/widgets/sidebar/TasksList";
 import TaskFilterMenu from "./FilterMenu";
+import type { Task } from "@/entites/task/model/TaskIteminterface";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -29,7 +30,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [activeTab, setActiveTab] = useState<Tab>("To Do");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { tasksList } = useStore()
+  const { tasksList, setSidebarOpen } = useStore();
+  const navigate = useNavigate();
 
   const [chosenPriorities, setChosenPriorities] = useState<string[]>(["all"]);
   const [chosenCategories, setChosenCategories] = useState<string[]>(["all"]);
@@ -65,40 +67,48 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         (chosenPriorities.includes("all") ||
           chosenPriorities.includes(task.priority)) &&
         (chosenCategories.includes("all") ||
-          chosenCategories.includes(task.category))
+          chosenCategories.includes(task.category)),
     );
 
   useEffect(() => {
     setFilteredTasksList(filterList(tasksList));
-  }, [
-    tasksList,
-    activeTab,
-    searchQuery,
-    chosenPriorities,
-    chosenCategories,
-  ]);
+  }, [tasksList, activeTab, searchQuery, chosenPriorities, chosenCategories]);
 
   const handleCreateTask = () => {
-    //To do
-  }
+    navigate(`/task/new`);
+    setSidebarOpen(false);
+  };
 
   return (
-    <Drawer.Root size={{ base: "full", md: "md" }} placement="start" open={isOpen} onOpenChange={() => onClose()}>
+    <Drawer.Root
+      size={{ base: "full", md: "md" }}
+      placement="start"
+      open={isOpen}
+      onOpenChange={() => onClose()}
+    >
       <Portal>
         <Drawer.Backdrop />
-        <Drawer.Positioner >
+        <Drawer.Positioner>
           <Drawer.Content>
-            <Drawer.Header >
-              <Drawer.Title>Менеджер задач</Drawer.Title>
+            <Drawer.Header>
+              <Drawer.Title fontSize={"xl"}>Менеджер задач</Drawer.Title>
             </Drawer.Header>
             <Drawer.Body p={{ base: "10px", md: "20px" }}>
               <Box>
-                <Button marginBottom={2} width={"100%"} onClick={handleCreateTask}>
+                <Button
+                  marginBottom={2}
+                  width={"100%"}
+                  onClick={handleCreateTask}
+                >
                   Создать задачу
                 </Button>
-                <Heading mb={2}>Задачи</Heading>
+                <Heading fontWeight="bold" mb={2}>
+                  Задачи
+                </Heading>
                 <Box>
-                  <Tabs.Root pt={5} pb={5}
+                  <Tabs.Root
+                    pt={5}
+                    pb={5}
                     fitted={isFitted}
                     variant={"enclosed"}
                     defaultValue="To Do"
@@ -107,7 +117,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     lazyMount
                     unmountOnExit
                   >
-                    <Tabs.List >
+                    <Tabs.List>
                       <Tabs.Trigger value="To Do">
                         <LuFilePen />
                         To Do
@@ -121,26 +131,16 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                         Done
                       </Tabs.Trigger>
                     </Tabs.List>
-
                   </Tabs.Root>
 
                   <HStack mb={5}>
-                    <IconButton
-                      variant="outline"
-                      aria-label="Найти задачу"
-                      onClick={() => {
-                        const filtered = filterList(tasksList);
-                        setFilteredTasksList(filtered);
-                      }}
-                    >
-                      <LuSearch />
-                    </IconButton>
-                    <Input
-                      placeholder="Имя задачи"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-
+                    <InputGroup flex="1" startElement={<LuSearch />}>
+                      <Input
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Поиск по имени задачи"
+                      />
+                    </InputGroup>
 
                     <TaskFilterMenu
                       chosenPriorities={chosenPriorities}
@@ -148,12 +148,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                       handlePriorityChange={handlePriorityChange}
                       handleCategoryChange={handleCategoryChange}
                     />
-
                   </HStack>
                 </Box>
-                <TasksList tasksList={filteredTasksList} onTaskClick={onClose} />
+                <TasksList
+                  tasksList={filteredTasksList}
+                  onTaskClick={onClose}
+                />
               </Box>
-
             </Drawer.Body>
             <Drawer.Footer>
               <Button variant="outline" onClick={onClose}>
