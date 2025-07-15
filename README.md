@@ -2,11 +2,17 @@
 
 **Стек:** React • TypeScript • Vite (Node v20.19.3, Vite v7.0.4)  
 **UI‑библиотека:** Chakra UI  
+
 **Сторедж:** Zustand
+
 **Даты:** date-fns
+
 **Валидация:** yup
+
 **Роутинг:** react-router
+
 **REST API Ftamework:** axios
+
 **ESlint + Prettier + Autoprefixer + PostCSS + Path Aliases**
 
 ## Запуск проекта
