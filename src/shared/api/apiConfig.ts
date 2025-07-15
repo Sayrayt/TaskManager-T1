@@ -5,7 +5,6 @@ import type { AxiosInstance } from "axios";
     Экземпляр axios с пользовательской конфигурацией
 */
 export const instance: AxiosInstance = axios.create({
-  withCredentials: true,
   baseURL: "https://6875711f814c0dfa653891a4.mockapi.io/api/v1",
 });
 
