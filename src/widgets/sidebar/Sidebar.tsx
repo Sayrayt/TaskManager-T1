@@ -41,9 +41,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [activeTab, setActiveTab] = useState<Tab>("To Do");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchError, setSearchError] = useState<string | null>(null);
-  const [localTasksList, setLocalTasksList] = useState<Task[]>([]);
 
-  const { tasksList, setSidebarOpen } = useStore();
+  const { tasksList, setTasksList, setSidebarOpen } = useStore();
   const navigate = useNavigate();
 
   const [chosenPriorities, setChosenPriorities] = useState<string[]>(["all"]);
@@ -56,8 +55,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   useEffect(() => {
     const fetchTasksList = async () => {
       try {
-        const tasksListFromServer = await tasksApiService.getTasksList();
-        console.log("tasksListFromServer", tasksListFromServer);
+        const response = await tasksApiService.getTasksList();
+        const tasksListFromServer = response.data;
+        setTasksList(tasksListFromServer);
       } catch (error) {
         console.error("Ошибка", error);
       }
@@ -65,26 +65,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
     fetchTasksList();
   }, []);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("tasksList");
-    if (stored) {
-      try {
-        setLocalTasksList(JSON.parse(stored));
-      } catch {
-        setLocalTasksList(tasksList);
-      }
-    } else {
-      setLocalTasksList(tasksList);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (tasksList.length > 0) {
-      localStorage.setItem("tasksList", JSON.stringify(tasksList));
-      setLocalTasksList(tasksList);
-    }
-  }, [tasksList]);
 
   const handlePriorityChange = (value: string) => {
     setChosenPriorities((prev) => {
@@ -144,13 +124,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   useEffect(() => {
-    setFilteredTasksList(filterList(localTasksList));
+    setFilteredTasksList(filterList(tasksList));
   }, [
     activeTab,
     searchQuery,
     chosenPriorities,
     chosenCategories,
-    localTasksList,
+    tasksList,
     sortDirection,
   ]);
 
