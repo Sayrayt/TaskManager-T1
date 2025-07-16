@@ -1,19 +1,23 @@
 // FilterMenu.tsx
-import { HStack, Menu, Portal, Button } from "@chakra-ui/react";
-import { LuListFilter } from "react-icons/lu";
+import { HStack, Menu, Portal, Button, IconButton } from "@chakra-ui/react";
+import { LuListFilter, LuArrowDownUp } from "react-icons/lu";
 
 interface FilterMenuProps {
   chosenPriorities: string[];
   chosenCategories: string[];
+  sortDirection: "asc" | "desc";
   handlePriorityChange: (value: string) => void;
   handleCategoryChange: (value: string) => void;
+  setSortDirection: (value: "asc" | "desc") => void;
 }
 
 export default function FilterMenu({
   chosenPriorities,
   chosenCategories,
+  sortDirection,
   handlePriorityChange,
   handleCategoryChange,
+  setSortDirection,
 }: FilterMenuProps) {
   const priorityOptions = ["Low", "Medium", "High"];
   const categoryOptions = [
@@ -25,10 +29,14 @@ export default function FilterMenu({
   ];
 
   return (
-    <HStack flexDirection={{ base: "column", md: "row" }} gap={2}>
+    <HStack gap={2}>
       <Menu.Root closeOnSelect={false}>
         <Menu.Trigger asChild>
-          <Button colorScheme="blue">
+          <Button
+            size={{ base: "xs", sm: "md" }}
+            aria-label="Приоритет"
+            colorScheme="blue"
+          >
             <LuListFilter />
             Приоритет
           </Button>
@@ -59,7 +67,11 @@ export default function FilterMenu({
 
       <Menu.Root closeOnSelect={false}>
         <Menu.Trigger asChild>
-          <Button colorScheme="blue">
+          <Button
+            size={{ base: "xs", sm: "md" }}
+            aria-label="Категория"
+            colorScheme="blue"
+          >
             <LuListFilter />
             Категория
           </Button>
@@ -87,6 +99,15 @@ export default function FilterMenu({
           </Menu.Positioner>
         </Portal>
       </Menu.Root>
+      <IconButton
+        size={{ base: "xs", sm: "md" }}
+        aria-label="Сортировка по дате"
+        onClick={() =>
+          setSortDirection(sortDirection === "asc" ? "desc" : "asc")
+        }
+      >
+        <LuArrowDownUp />
+      </IconButton>
     </HStack>
   );
 }

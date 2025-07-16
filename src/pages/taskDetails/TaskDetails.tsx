@@ -347,27 +347,32 @@ export default function TaskDetails() {
                 {categoryError}
               </Box>
             )}
+            <Field.Root>
+              <Field.Label>Дата создания задачи</Field.Label>
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                dateFormat="dd.MM.yyyy"
+                customInput={
+                  <Calendar
+                    selectedDate={selectedDate}
+                    onDateChange={setSelectedDate}
+                  />
+                }
+              />
+            </Field.Root>
           </Stack>
         </Card.Body>
         <Card.Footer justifyContent="flex-end">
-          <Field.Root>
-            <Field.Label>Дата создания задачи</Field.Label>
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
-              dateFormat="dd.MM.yyyy"
-              customInput={
-                <Calendar
-                  selectedDate={selectedDate}
-                  onDateChange={setSelectedDate}
-                />
-              }
-            />
-          </Field.Root>
-          <Button variant="outline" onClick={handleCancel}>
+          <Button aria-label="Отмена" variant="outline" onClick={handleCancel}>
             Отмена
           </Button>
-          <Button colorPalette="green" onClick={handleSave} variant="solid">
+          <Button
+            aria-label="Сохранить"
+            colorPalette="green"
+            onClick={handleSave}
+            variant="solid"
+          >
             Сохранить
           </Button>
         </Card.Footer>

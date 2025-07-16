@@ -43,7 +43,6 @@ export default function CreateTask() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const handleCancel = () => {
-    setSidebarOpen(true);
     navigate("/");
   };
 
@@ -82,7 +81,6 @@ export default function CreateTask() {
       setCategory("Bug");
       setSelectedDate(null);
 
-      setSidebarOpen(true);
       navigate("/");
     } catch (err) {
       if (err instanceof yup.ValidationError) {
@@ -322,29 +320,33 @@ export default function CreateTask() {
                 {categoryError}
               </Box>
             )}
+            <Field.Root>
+              <Field.Label>Дата создания задачи</Field.Label>
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                dateFormat="dd.MM.yyyy"
+                customInput={
+                  <Calendar
+                    selectedDate={selectedDate}
+                    onDateChange={setSelectedDate}
+                  />
+                }
+              />
+            </Field.Root>
           </Stack>
         </Card.Body>
 
         <Card.Footer justifyContent="flex-end">
-          <Field.Root>
-            <Field.Label>Дата создания задачи</Field.Label>
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
-              dateFormat="dd.MM.yyyy"
-              customInput={
-                <Calendar
-                  selectedDate={selectedDate}
-                  onDateChange={setSelectedDate}
-                />
-              }
-            />
-          </Field.Root>
-
-          <Button variant="outline" onClick={handleCancel}>
+          <Button aria-label="Отмена" variant="outline" onClick={handleCancel}>
             Отмена
           </Button>
-          <Button colorPalette="green" onClick={handleCreate} variant="solid">
+          <Button
+            aria-label="Создать"
+            colorPalette="green"
+            onClick={handleCreate}
+            variant="solid"
+          >
             Создать
           </Button>
         </Card.Footer>

@@ -20,7 +20,11 @@ export default function ErrorPage() {
           Произошла ошибка
         </Text>
         <Text>Вы будете перенаправлены на главную страницу</Text>
-        <Button onClick={() => navigate("/")} colorScheme="blue">
+        <Button
+          aria-label="Вернуться на главную"
+          onClick={() => navigate("/")}
+          colorScheme="blue"
+        >
           Вернуться сейчас
         </Button>
       </VStack>

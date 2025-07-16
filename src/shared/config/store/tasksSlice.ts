@@ -15,7 +15,7 @@ export interface TasksSlice {
 }
 
 export const createTasksSlice: StateCreator<TasksSlice> = (set) => ({
-  isSidebarOpen: true,
+  isSidebarOpen: false,
   editableTask: {} as Task,
   tasksList: [],
   setTasksList: (newValue) => set(() => ({ tasksList: newValue })),

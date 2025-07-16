@@ -30,19 +30,14 @@ import type { Task } from "@/entites/task/model/TaskIteminterface";
 import { parse, compareAsc, compareDesc } from "date-fns";
 import tasksApiService from "@/shared/api/tasksApiService";
 
-interface SidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
 type Tab = "To Do" | "In Progress" | "Done";
 
-export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+export default function Sidebar() {
   const [activeTab, setActiveTab] = useState<Tab>("To Do");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchError, setSearchError] = useState<string | null>(null);
 
-  const { tasksList, setTasksList, setSidebarOpen } = useStore();
+  const { tasksList, setTasksList, setSidebarOpen, isSidebarOpen } = useStore();
   const navigate = useNavigate();
 
   const [chosenPriorities, setChosenPriorities] = useState<string[]>(["all"]);
@@ -52,6 +47,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const isFitted = useBreakpointValue({ base: false, md: true });
 
+  //Получить список задач с сервера
   useEffect(() => {
     const fetchTasksList = async () => {
       try {
@@ -143,8 +139,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     <Drawer.Root
       size={{ base: "full", md: "lg" }}
       placement="start"
-      open={isOpen}
-      onOpenChange={() => onClose()}
+      open={isSidebarOpen}
+      onOpenChange={(details) => {
+        if (!details.open) {
+          setSidebarOpen(false);
+        }
+      }}
     >
       <Portal>
         <Drawer.Backdrop />
@@ -156,6 +156,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             <Drawer.Body p={{ base: "10px", md: "20px" }}>
               <Box>
                 <Button
+                  aria-label="Создать задачу"
                   marginBottom={2}
                   width={"100%"}
                   onClick={handleClickCreateTask}
@@ -176,6 +177,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     onValueChange={(e) => setActiveTab(e.value as Tab)}
                     lazyMount
                     unmountOnExit
+                    size={"sm"}
                   >
                     <Tabs.List>
                       <Tabs.Trigger value="To Do">
@@ -193,7 +195,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     </Tabs.List>
                   </Tabs.Root>
 
-                  <HStack mb={5}>
+                  <HStack flexDirection={{ base: "column", md: "row" }} mb={5}>
                     <InputGroup flex="1" startElement={<LuSearch />}>
                       <Input
                         value={searchQuery}
@@ -211,36 +213,37 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <TaskFilterMenu
                       chosenPriorities={chosenPriorities}
                       chosenCategories={chosenCategories}
+                      sortDirection={sortDirection}
                       handlePriorityChange={handlePriorityChange}
                       handleCategoryChange={handleCategoryChange}
+                      setSortDirection={setSortDirection}
                     />
-
-                    <IconButton
-                      aria-label="Сортировка по дате"
-                      onClick={() =>
-                        setSortDirection((prev) =>
-                          prev === "asc" ? "desc" : "asc",
-                        )
-                      }
-                    >
-                      <LuArrowDownUp />
-                    </IconButton>
                   </HStack>
                 </Box>
                 <TasksList
                   tasksList={filteredTasksList}
-                  onTaskClick={onClose}
+                  onTaskClick={() => setSidebarOpen(false)}
                 />
               </Box>
             </Drawer.Body>
             <Drawer.Footer>
-              <Button variant="outline" onClick={onClose}>
+              <Button
+                aria-label="Закрыть"
+                variant="outline"
+                onClick={() => setSidebarOpen(false)}
+              >
                 Закрыть
               </Button>
             </Drawer.Footer>
 
             <Drawer.CloseTrigger asChild>
-              <CloseButton size="sm" position="absolute" top="2" right="2" />
+              <CloseButton
+                aria-label="Закрыть"
+                size="sm"
+                position="absolute"
+                top="2"
+                right="2"
+              />
             </Drawer.CloseTrigger>
           </Drawer.Content>
         </Drawer.Positioner>

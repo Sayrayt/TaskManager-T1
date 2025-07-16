@@ -49,6 +49,7 @@ export default function TaskItem({ task, onTaskClick }: TaskItemProps) {
           <HStack alignItems={"flex-end"} justifyContent={"space-between"}>
             <Card.Title mb="2">{task.title}</Card.Title>
             <IconButton
+              aria-label="Удалить задачу"
               size={"xl"}
               onClick={handleDeleteTask}
               variant={"subtle"}
@@ -77,7 +78,9 @@ export default function TaskItem({ task, onTaskClick }: TaskItemProps) {
         </Card.Body>
 
         <Card.Footer flexDirection={"row-reverse"}>
-          <Button onClick={handleEditClick}>Редактировать</Button>
+          <Button aria-label="Редактировать задачу" onClick={handleEditClick}>
+            Редактировать
+          </Button>
           <Stat.Root w={"full"}>
             <Stat.Label>Дата создания</Stat.Label>
             <Stat.ValueText fontSize={"md"}>{task.date}</Stat.ValueText>
