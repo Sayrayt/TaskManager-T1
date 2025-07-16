@@ -1,6 +1,6 @@
 import type { StateCreator } from "zustand";
 import type { Task } from "@/entites/task/model/TaskIteminterface";
-import { tasksList } from "@/shared/config/store/__mocks__/storeMocks";
+// import { tasksList } from "@/shared/config/store/__mocks__/storeMocks";
 
 export interface TasksSlice {
   isSidebarOpen: boolean;
@@ -17,7 +17,7 @@ export interface TasksSlice {
 export const createTasksSlice: StateCreator<TasksSlice> = (set) => ({
   isSidebarOpen: true,
   editableTask: {} as Task,
-  tasksList: tasksList,
+  tasksList: [],
   setTasksList: (newValue) => set(() => ({ tasksList: newValue })),
   setEditableTask: (newValue) => set(() => ({ editableTask: newValue })),
   setSidebarOpen: (value) => set(() => ({ isSidebarOpen: value })),

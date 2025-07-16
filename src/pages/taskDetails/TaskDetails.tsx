@@ -40,10 +40,7 @@ export default function TaskDetails() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   useEffect(() => {
-    const taskFromStorage = localStorage.getItem("editableTask");
-    const editable = taskFromStorage
-      ? JSON.parse(taskFromStorage)
-      : editableTask;
+    const editable = editableTask;
 
     if (!editable?.id) {
       navigate("/", { state: { openSidebar: true } });
@@ -101,7 +98,6 @@ export default function TaskDetails() {
         type: "success",
       });
 
-      localStorage.setItem("editableTask", JSON.stringify({} as Task));
       navigate("/", { state: { openSidebar: true } });
 
       setTitleError(null);
