@@ -15,31 +15,25 @@ import {
   getPriorityColor,
   getStatusColor,
 } from "@/entites/task/model/taskLogic";
-import { toaster } from "@/shared/ui/toaster";
 import { LuTrash2 } from "react-icons/lu";
+import { useTaskMutations } from "@/shared/hooks/useTaskMutations";
 
 interface TaskItemProps {
   task: Task;
-  onTaskClick: () => void;
 }
 
-export default function TaskItem({ task, onTaskClick }: TaskItemProps) {
-  const { setEditableTask, deleteTask } = useStore();
+export default function TaskItem({ task }: TaskItemProps) {
+  const { setSidebarOpen } = useStore();
+  const { deleteTask } = useTaskMutations();
   const navigate = useNavigate();
 
   const handleEditClick = () => {
-    setEditableTask(task);
     navigate(`/task/${task.id}`);
-    onTaskClick();
-    localStorage.setItem("editableTask", JSON.stringify(task));
+    setSidebarOpen(false);
   };
 
   const handleDeleteTask = () => {
-    deleteTask(task);
-    toaster.create({
-      description: `Задача "${task.title}" успешно удалена`,
-      type: "success",
-    });
+    deleteTask.mutate(task);
   };
 
   return (

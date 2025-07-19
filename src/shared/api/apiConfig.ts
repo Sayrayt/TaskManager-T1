@@ -5,7 +5,12 @@ import type { AxiosInstance } from "axios";
     Экземпляр axios с пользовательской конфигурацией
 */
 export const instance: AxiosInstance = axios.create({
-  baseURL: "https://6875711f814c0dfa653891a4.mockapi.io/api/v1",
+  // baseURL: `http://${
+  //   import.meta.env.DEV
+  //     ? import.meta.env.VITE_DEV_SERV
+  //     : window.location.hostname
+  // }:3000/api`,
+  baseURL: `http://https://taskmanagerbackend-t1.onrender.com/api`,
 });
 
 //Перехватчик запросов

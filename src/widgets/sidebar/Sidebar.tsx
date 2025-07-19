@@ -10,25 +10,18 @@ import {
   HStack,
   Tabs,
   useBreakpointValue,
-  IconButton,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import useStore from "@/shared/config/store/store";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
-import {
-  LuSearch,
-  LuFileClock,
-  LuFileCheck2,
-  LuFilePen,
-  LuArrowDownUp,
-} from "react-icons/lu";
+import { LuSearch, LuFileClock, LuFileCheck2, LuFilePen } from "react-icons/lu";
 import TasksList from "@/widgets/sidebar/TasksList";
 import TaskFilterMenu from "@/widgets/sidebar/FilterMenu";
 import { searchSchema } from "@/widgets/sidebar/model/sidebarValidationShema";
 import type { Task } from "@/entites/task/model/TaskIteminterface";
 import { parse, compareAsc, compareDesc } from "date-fns";
-import tasksApiService from "@/shared/api/tasksApiService";
+import { useTasks } from "@/shared/hooks/useTasks";
 
 type Tab = "To Do" | "In Progress" | "Done";
 
@@ -37,7 +30,8 @@ export default function Sidebar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchError, setSearchError] = useState<string | null>(null);
 
-  const { tasksList, setTasksList, setSidebarOpen, isSidebarOpen } = useStore();
+  const { setSidebarOpen, isSidebarOpen } = useStore();
+  const { getTasks } = useTasks();
   const navigate = useNavigate();
 
   const [chosenPriorities, setChosenPriorities] = useState<string[]>(["all"]);
@@ -46,21 +40,6 @@ export default function Sidebar() {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
   const isFitted = useBreakpointValue({ base: false, md: true });
-
-  //Получить список задач с сервера
-  useEffect(() => {
-    const fetchTasksList = async () => {
-      try {
-        const response = await tasksApiService.getTasksList();
-        const tasksListFromServer = response.data;
-        setTasksList(tasksListFromServer);
-      } catch (error) {
-        console.error("Ошибка", error);
-      }
-    };
-
-    fetchTasksList();
-  }, []);
 
   const handlePriorityChange = (value: string) => {
     setChosenPriorities((prev) => {
@@ -120,13 +99,13 @@ export default function Sidebar() {
   };
 
   useEffect(() => {
-    setFilteredTasksList(filterList(tasksList));
+    setFilteredTasksList(filterList(getTasks.data));
   }, [
     activeTab,
     searchQuery,
     chosenPriorities,
     chosenCategories,
-    tasksList,
+    getTasks.data,
     sortDirection,
   ]);
 
@@ -134,6 +113,11 @@ export default function Sidebar() {
     navigate(`/task/new`);
     setSidebarOpen(false);
   };
+
+  if (getTasks.error && !getTasks.isFetching) {
+    console.log("Мамочку твою чпокал");
+    // throw error;
+  }
 
   return (
     <Drawer.Root
@@ -220,10 +204,7 @@ export default function Sidebar() {
                     />
                   </HStack>
                 </Box>
-                <TasksList
-                  tasksList={filteredTasksList}
-                  onTaskClick={() => setSidebarOpen(false)}
-                />
+                <TasksList tasks={filteredTasksList} />
               </Box>
             </Drawer.Body>
             <Drawer.Footer>

@@ -13,26 +13,26 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useStore from "@/shared/config/store/store";
 import type { Task } from "@/entites/task/model/TaskIteminterface";
 import { statuses, priorities, categories } from "@/shared/__mocks__/mocks";
 import { v4 as uuidv4 } from "uuid";
-import { toaster } from "@/shared/ui/toaster";
 import { taskValidationSchema } from "@/shared/model/taskValidationShema";
 import * as yup from "yup";
 import { format } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Calendar } from "@/pages/createTask/Calendar";
+import { useTaskMutations } from "@/shared/hooks/useTaskMutations";
 
 export default function CreateTask() {
-  const { setSidebarOpen, createTask } = useStore();
   const navigate = useNavigate();
   const [title, setTitle] = useState<Task["title"]>("");
   const [description, setDescription] = useState<Task["description"]>("");
   const [status, setStatus] = useState<Task["status"]>("To Do");
   const [priority, setPriority] = useState<Task["priority"]>("Low");
   const [category, setCategory] = useState<Task["category"]>("Bug");
+
+  const { createTask } = useTaskMutations();
 
   const [titleError, setTitleError] = useState<string | null>(null);
   const [descriptionError, setDescriptionError] = useState<string | null>(null);
@@ -67,12 +67,7 @@ export default function CreateTask() {
         date,
       };
 
-      toaster.create({
-        description: `Задача "${title}" успешно создана`,
-        type: "success",
-      });
-
-      createTask(newTask);
+      createTask.mutate(newTask);
 
       setTitle("");
       setDescription("");

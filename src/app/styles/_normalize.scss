@@ -144,12 +144,12 @@ label {
 /**
    Приводим к единому цвету svg-элементы
   */
-[fill] {
-  fill: currentColor;
-}
-[stroke] {
-  stroke: currentColor;
-}
+// [fill] {
+//   fill: currentColor;
+// }
+// [stroke] {
+//   stroke: currentColor;
+// }
 
 /**
    Чиним баг задержки смены цвета при взаимодействии с svg-элементами
