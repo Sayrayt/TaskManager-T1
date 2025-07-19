@@ -10,21 +10,23 @@ import {
   Field,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
-import useStore from "@/shared/config/store/store";
 import { useNavigate } from "react-router-dom";
 import type { Task } from "@/entites/task/model/TaskIteminterface";
 import { statuses, priorities, categories } from "@/shared/__mocks__/mocks";
-import { toaster } from "@/shared/ui/toaster";
 import { taskValidationSchema } from "@/shared/model/taskValidationShema";
 import * as yup from "yup";
 import { format } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Calendar } from "@/pages/createTask/Calendar";
+import { useTaskMutations } from "@/shared/hooks/useTaskMutations";
+import { useTaskById } from "@/shared/hooks/useTasks";
+import { useParams } from "react-router-dom";
 
 export default function TaskDetails() {
-  const { editableTask, updateTask, setEditableTask } = useStore();
+  const { updateTask } = useTaskMutations();
   const navigate = useNavigate();
+
   const [title, setTitle] = useState<Task["title"]>("");
   const [description, setDescription] = useState<Task["description"]>("");
   const [status, setStatus] = useState<Task["status"]>("To Do");
@@ -39,19 +41,17 @@ export default function TaskDetails() {
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-  useEffect(() => {
-    const taskFromStorage = localStorage.getItem("editableTask");
-    const editable = taskFromStorage
-      ? JSON.parse(taskFromStorage)
-      : editableTask;
+  const { taskId } = useParams<{ taskId: string }>();
 
-    if (!editable?.id) {
-      navigate("/", { state: { openSidebar: true } });
-    }
-  }, [navigate]);
+  const { data: editableTask } = useTaskById(taskId);
+
+  if (!taskId) {
+    navigate("/", { state: { openSidebar: true } });
+    return null;
+  }
 
   useEffect(() => {
-    if (editableTask?.title) {
+    if (editableTask) {
       setTitle(editableTask.title);
       setDescription(editableTask.description || "Описание отсутсвует");
       setStatus(editableTask.status);
@@ -61,7 +61,6 @@ export default function TaskDetails() {
   }, [editableTask]);
 
   const handleCancel = () => {
-    setEditableTask({} as Task);
     navigate("/", { state: { openSidebar: true } });
   };
 
@@ -93,15 +92,9 @@ export default function TaskDetails() {
       };
 
       if (updateTask) {
-        updateTask(updatedTask);
+        updateTask.mutate(updatedTask);
       }
 
-      toaster.create({
-        description: `Задача "${title}" успешно отредактирована`,
-        type: "success",
-      });
-
-      localStorage.setItem("editableTask", JSON.stringify({} as Task));
       navigate("/", { state: { openSidebar: true } });
 
       setTitleError(null);
@@ -351,27 +344,32 @@ export default function TaskDetails() {
                 {categoryError}
               </Box>
             )}
+            <Field.Root>
+              <Field.Label>Дата создания задачи</Field.Label>
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                dateFormat="dd.MM.yyyy"
+                customInput={
+                  <Calendar
+                    selectedDate={selectedDate}
+                    onDateChange={setSelectedDate}
+                  />
+                }
+              />
+            </Field.Root>
           </Stack>
         </Card.Body>
         <Card.Footer justifyContent="flex-end">
-          <Field.Root>
-            <Field.Label>Дата создания задачи</Field.Label>
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
-              dateFormat="dd.MM.yyyy"
-              customInput={
-                <Calendar
-                  selectedDate={selectedDate}
-                  onDateChange={setSelectedDate}
-                />
-              }
-            />
-          </Field.Root>
-          <Button variant="outline" onClick={handleCancel}>
+          <Button aria-label="Отмена" variant="outline" onClick={handleCancel}>
             Отмена
           </Button>
-          <Button colorPalette="green" onClick={handleSave} variant="solid">
+          <Button
+            aria-label="Сохранить"
+            colorPalette="green"
+            onClick={handleSave}
+            variant="solid"
+          >
             Сохранить
           </Button>
         </Card.Footer>

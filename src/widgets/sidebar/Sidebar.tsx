@@ -10,40 +10,28 @@ import {
   HStack,
   Tabs,
   useBreakpointValue,
-  IconButton,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import useStore from "@/shared/config/store/store";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
-import {
-  LuSearch,
-  LuFileClock,
-  LuFileCheck2,
-  LuFilePen,
-  LuArrowDownUp,
-} from "react-icons/lu";
+import { LuSearch, LuFileClock, LuFileCheck2, LuFilePen } from "react-icons/lu";
 import TasksList from "@/widgets/sidebar/TasksList";
 import TaskFilterMenu from "@/widgets/sidebar/FilterMenu";
 import { searchSchema } from "@/widgets/sidebar/model/sidebarValidationShema";
 import type { Task } from "@/entites/task/model/TaskIteminterface";
 import { parse, compareAsc, compareDesc } from "date-fns";
-import tasksApiService from "@/shared/api/tasksApiService";
-
-interface SidebarProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+import { useTasks } from "@/shared/hooks/useTasks";
 
 type Tab = "To Do" | "In Progress" | "Done";
 
-export default function Sidebar({ isOpen, onClose }: SidebarProps) {
+export default function Sidebar() {
   const [activeTab, setActiveTab] = useState<Tab>("To Do");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchError, setSearchError] = useState<string | null>(null);
-  const [localTasksList, setLocalTasksList] = useState<Task[]>([]);
 
-  const { tasksList, setSidebarOpen } = useStore();
+  const { setSidebarOpen, isSidebarOpen } = useStore();
+  const { getTasks } = useTasks();
   const navigate = useNavigate();
 
   const [chosenPriorities, setChosenPriorities] = useState<string[]>(["all"]);
@@ -52,39 +40,6 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
   const isFitted = useBreakpointValue({ base: false, md: true });
-
-  useEffect(() => {
-    const fetchTasksList = async () => {
-      try {
-        const tasksListFromServer = await tasksApiService.getTasksList();
-        console.log("tasksListFromServer", tasksListFromServer);
-      } catch (error) {
-        console.error("Ошибка", error);
-      }
-    };
-
-    fetchTasksList();
-  }, []);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("tasksList");
-    if (stored) {
-      try {
-        setLocalTasksList(JSON.parse(stored));
-      } catch {
-        setLocalTasksList(tasksList);
-      }
-    } else {
-      setLocalTasksList(tasksList);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (tasksList.length > 0) {
-      localStorage.setItem("tasksList", JSON.stringify(tasksList));
-      setLocalTasksList(tasksList);
-    }
-  }, [tasksList]);
 
   const handlePriorityChange = (value: string) => {
     setChosenPriorities((prev) => {
@@ -144,13 +99,13 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   useEffect(() => {
-    setFilteredTasksList(filterList(localTasksList));
+    setFilteredTasksList(filterList(getTasks.data));
   }, [
     activeTab,
     searchQuery,
     chosenPriorities,
     chosenCategories,
-    localTasksList,
+    getTasks.data,
     sortDirection,
   ]);
 
@@ -159,23 +114,33 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     setSidebarOpen(false);
   };
 
+  if (getTasks.error && !getTasks.isFetching) {
+    console.log("Мамочку твою чпокал");
+    // throw error;
+  }
+
   return (
     <Drawer.Root
       size={{ base: "full", md: "lg" }}
       placement="start"
-      open={isOpen}
-      onOpenChange={() => onClose()}
+      open={isSidebarOpen}
+      onOpenChange={(details) => {
+        if (!details.open) {
+          setSidebarOpen(false);
+        }
+      }}
     >
       <Portal>
         <Drawer.Backdrop />
         <Drawer.Positioner>
-          <Drawer.Content>
+          <Drawer.Content scrollbarGutter={"stable"}>
             <Drawer.Header>
               <Drawer.Title fontSize={"xl"}>Менеджер задач</Drawer.Title>
             </Drawer.Header>
             <Drawer.Body p={{ base: "10px", md: "20px" }}>
               <Box>
                 <Button
+                  aria-label="Создать задачу"
                   marginBottom={2}
                   width={"100%"}
                   onClick={handleClickCreateTask}
@@ -196,6 +161,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     onValueChange={(e) => setActiveTab(e.value as Tab)}
                     lazyMount
                     unmountOnExit
+                    size={"sm"}
                   >
                     <Tabs.List>
                       <Tabs.Trigger value="To Do">
@@ -213,7 +179,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     </Tabs.List>
                   </Tabs.Root>
 
-                  <HStack mb={5}>
+                  <HStack flexDirection={{ base: "column", md: "row" }} mb={5}>
                     <InputGroup flex="1" startElement={<LuSearch />}>
                       <Input
                         value={searchQuery}
@@ -231,36 +197,34 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <TaskFilterMenu
                       chosenPriorities={chosenPriorities}
                       chosenCategories={chosenCategories}
+                      sortDirection={sortDirection}
                       handlePriorityChange={handlePriorityChange}
                       handleCategoryChange={handleCategoryChange}
+                      setSortDirection={setSortDirection}
                     />
-
-                    <IconButton
-                      aria-label="Сортировка по дате"
-                      onClick={() =>
-                        setSortDirection((prev) =>
-                          prev === "asc" ? "desc" : "asc",
-                        )
-                      }
-                    >
-                      <LuArrowDownUp />
-                    </IconButton>
                   </HStack>
                 </Box>
-                <TasksList
-                  tasksList={filteredTasksList}
-                  onTaskClick={onClose}
-                />
+                <TasksList tasks={filteredTasksList} />
               </Box>
             </Drawer.Body>
             <Drawer.Footer>
-              <Button variant="outline" onClick={onClose}>
+              <Button
+                aria-label="Закрыть"
+                variant="outline"
+                onClick={() => setSidebarOpen(false)}
+              >
                 Закрыть
               </Button>
             </Drawer.Footer>
 
             <Drawer.CloseTrigger asChild>
-              <CloseButton size="sm" position="absolute" top="2" right="2" />
+              <CloseButton
+                aria-label="Закрыть"
+                size="sm"
+                position="absolute"
+                top="2"
+                right="2"
+              />
             </Drawer.CloseTrigger>
           </Drawer.Content>
         </Drawer.Positioner>

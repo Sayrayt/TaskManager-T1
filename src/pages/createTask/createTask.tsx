@@ -13,26 +13,26 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useStore from "@/shared/config/store/store";
 import type { Task } from "@/entites/task/model/TaskIteminterface";
 import { statuses, priorities, categories } from "@/shared/__mocks__/mocks";
 import { v4 as uuidv4 } from "uuid";
-import { toaster } from "@/shared/ui/toaster";
 import { taskValidationSchema } from "@/shared/model/taskValidationShema";
 import * as yup from "yup";
 import { format } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Calendar } from "@/pages/createTask/Calendar";
+import { useTaskMutations } from "@/shared/hooks/useTaskMutations";
 
 export default function CreateTask() {
-  const { setSidebarOpen, createTask } = useStore();
   const navigate = useNavigate();
   const [title, setTitle] = useState<Task["title"]>("");
   const [description, setDescription] = useState<Task["description"]>("");
   const [status, setStatus] = useState<Task["status"]>("To Do");
   const [priority, setPriority] = useState<Task["priority"]>("Low");
   const [category, setCategory] = useState<Task["category"]>("Bug");
+
+  const { createTask } = useTaskMutations();
 
   const [titleError, setTitleError] = useState<string | null>(null);
   const [descriptionError, setDescriptionError] = useState<string | null>(null);
@@ -43,7 +43,6 @@ export default function CreateTask() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const handleCancel = () => {
-    setSidebarOpen(true);
     navigate("/");
   };
 
@@ -68,12 +67,7 @@ export default function CreateTask() {
         date,
       };
 
-      toaster.create({
-        description: `Задача "${title}" успешно создана`,
-        type: "success",
-      });
-
-      createTask(newTask);
+      createTask.mutate(newTask);
 
       setTitle("");
       setDescription("");
@@ -82,7 +76,6 @@ export default function CreateTask() {
       setCategory("Bug");
       setSelectedDate(null);
 
-      setSidebarOpen(true);
       navigate("/");
     } catch (err) {
       if (err instanceof yup.ValidationError) {
@@ -322,29 +315,33 @@ export default function CreateTask() {
                 {categoryError}
               </Box>
             )}
+            <Field.Root>
+              <Field.Label>Дата создания задачи</Field.Label>
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                dateFormat="dd.MM.yyyy"
+                customInput={
+                  <Calendar
+                    selectedDate={selectedDate}
+                    onDateChange={setSelectedDate}
+                  />
+                }
+              />
+            </Field.Root>
           </Stack>
         </Card.Body>
 
         <Card.Footer justifyContent="flex-end">
-          <Field.Root>
-            <Field.Label>Дата создания задачи</Field.Label>
-            <DatePicker
-              selected={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
-              dateFormat="dd.MM.yyyy"
-              customInput={
-                <Calendar
-                  selectedDate={selectedDate}
-                  onDateChange={setSelectedDate}
-                />
-              }
-            />
-          </Field.Root>
-
-          <Button variant="outline" onClick={handleCancel}>
+          <Button aria-label="Отмена" variant="outline" onClick={handleCancel}>
             Отмена
           </Button>
-          <Button colorPalette="green" onClick={handleCreate} variant="solid">
+          <Button
+            aria-label="Создать"
+            colorPalette="green"
+            onClick={handleCreate}
+            variant="solid"
+          >
             Создать
           </Button>
         </Card.Footer>
