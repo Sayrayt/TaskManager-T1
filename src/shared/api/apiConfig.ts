@@ -10,7 +10,7 @@ export const instance: AxiosInstance = axios.create({
   //     ? import.meta.env.VITE_DEV_SERV
   //     : window.location.hostname
   // }:3000/api`,
-  baseURL: `http://https://taskmanagerbackend-t1.onrender.com/api`,
+  baseURL: `https://taskmanagerbackend-t1.onrender.com/api`,
 });
 
 //Перехватчик запросов
