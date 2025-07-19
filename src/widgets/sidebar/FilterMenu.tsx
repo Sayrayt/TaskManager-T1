@@ -1,5 +1,5 @@
 // FilterMenu.tsx
-import { HStack, Menu, Portal, Button, IconButton } from "@chakra-ui/react";
+import { HStack, Menu, Button, IconButton } from "@chakra-ui/react";
 import { LuListFilter, LuArrowDownUp } from "react-icons/lu";
 
 interface FilterMenuProps {
@@ -41,28 +41,23 @@ export default function FilterMenu({
             Приоритет
           </Button>
         </Menu.Trigger>
-        <Portal>
-          <Menu.Positioner>
-            <Menu.Content zIndex="popover" minW="200px">
+        <Menu.Positioner>
+          <Menu.Content zIndex="popover" minW="200px">
+            <Menu.Item value="all" onClick={() => handlePriorityChange("all")}>
+              {chosenPriorities.includes("all") ? "✓ " : ""}Все
+            </Menu.Item>
+            {priorityOptions.map((opt) => (
               <Menu.Item
-                value="all"
-                onClick={() => handlePriorityChange("all")}
+                key={opt}
+                value={opt}
+                onClick={() => handlePriorityChange(opt)}
               >
-                {chosenPriorities.includes("all") ? "✓ " : ""}Все
+                {chosenPriorities.includes(opt) ? "✓ " : ""}
+                {opt}
               </Menu.Item>
-              {priorityOptions.map((opt) => (
-                <Menu.Item
-                  key={opt}
-                  value={opt}
-                  onClick={() => handlePriorityChange(opt)}
-                >
-                  {chosenPriorities.includes(opt) ? "✓ " : ""}
-                  {opt}
-                </Menu.Item>
-              ))}
-            </Menu.Content>
-          </Menu.Positioner>
-        </Portal>
+            ))}
+          </Menu.Content>
+        </Menu.Positioner>
       </Menu.Root>
 
       <Menu.Root closeOnSelect={false}>
@@ -76,28 +71,23 @@ export default function FilterMenu({
             Категория
           </Button>
         </Menu.Trigger>
-        <Portal>
-          <Menu.Positioner>
-            <Menu.Content zIndex="popover" minW="200px">
+        <Menu.Positioner>
+          <Menu.Content zIndex="popover" minW="200px">
+            <Menu.Item value="all" onClick={() => handleCategoryChange("all")}>
+              {chosenCategories.includes("all") ? "✓ " : ""}Все
+            </Menu.Item>
+            {categoryOptions.map((cat) => (
               <Menu.Item
-                value="all"
-                onClick={() => handleCategoryChange("all")}
+                key={cat}
+                value={cat}
+                onClick={() => handleCategoryChange(cat)}
               >
-                {chosenCategories.includes("all") ? "✓ " : ""}Все
+                {chosenCategories.includes(cat) ? "✓ " : ""}
+                {cat}
               </Menu.Item>
-              {categoryOptions.map((cat) => (
-                <Menu.Item
-                  key={cat}
-                  value={cat}
-                  onClick={() => handleCategoryChange(cat)}
-                >
-                  {chosenCategories.includes(cat) ? "✓ " : ""}
-                  {cat}
-                </Menu.Item>
-              ))}
-            </Menu.Content>
-          </Menu.Positioner>
-        </Portal>
+            ))}
+          </Menu.Content>
+        </Menu.Positioner>
       </Menu.Root>
       <IconButton
         size={{ base: "xs", sm: "md" }}

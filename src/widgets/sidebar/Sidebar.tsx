@@ -133,7 +133,7 @@ export default function Sidebar() {
       <Portal>
         <Drawer.Backdrop />
         <Drawer.Positioner>
-          <Drawer.Content>
+          <Drawer.Content scrollbarGutter={"stable"}>
             <Drawer.Header>
               <Drawer.Title fontSize={"xl"}>Менеджер задач</Drawer.Title>
             </Drawer.Header>
