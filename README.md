@@ -30,12 +30,8 @@
    
 ## Запуск задеплоеного проекта
 
-1. Ссылка на vercel - 
-   ```bash
-   npm install
-   ```
-2. Запустить задеплоеный бэк - https://taskmanagerbackend-t1.onrender.com
-
+1. Запустить задеплоеный бэк - https://taskmanagerbackend-t1.onrender.com
+2. Открыть фронт на vercel - https://hw1-t1-git-main-nikitas-projects-b068203b.vercel.app
 
 # Описание
 
