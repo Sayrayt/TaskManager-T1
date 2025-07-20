@@ -15,16 +15,27 @@
 
 **ESlint + Prettier + Autoprefixer + PostCSS + Path Aliases**
 
-## Запуск проекта
+## Запуск локального проекта
 
 1. Установить зависимости
    ```bash
    npm install
    ```
-2. Запустить dev‑сервер
+2. Установить сервер и запустить его - https://github.com/Sayrayt/TaskManagerBackend-T1.git
+
+3. Запустить dev‑сервер
    ```bash
    npm run dev
    ```
+   
+## Запуск задеплоеного проекта
+
+1. Ссылка на vercel - 
+   ```bash
+   npm install
+   ```
+2. Запустить задеплоеный бэк - https://taskmanagerbackend-t1.onrender.com
+
 
 # Описание
 
